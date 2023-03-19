@@ -1,0 +1,64 @@
+<resources>
+    <declare-styleable name="ViewfinderView">
+        <attr name="vvViewfinderStyle" format="enum">
+            <enum name="classic" value="0"/>
+            <enum name="popular" value="1"/>
+        </attr>
+        <attr name="vvMaskColor" format="color" />
+        <attr name="vvFrameColor" format="color" />
+        <attr name="vvFrameWidth" format="dimension"/>
+        <attr name="vvFrameHeight" format="dimension"/>
+        <attr name="vvFrameRatio" format="float"/>
+        <attr name="vvFrameLineStrokeWidth" format="dimension"/>
+        <attr name="vvFramePaddingLeft" format="dimension"/>
+        <attr name="vvFramePaddingTop" format="dimension"/>
+        <attr name="vvFramePaddingRight" format="dimension"/>
+        <attr name="vvFramePaddingBottom" format="dimension"/>
+        <attr name="vvFrameGravity" format="enum">
+            <enum name="center" value="0"/>
+            <enum name="left" value="1"/>
+            <enum name="top" value="2"/>
+            <enum name="right" value="3"/>
+            <enum name="bottom" value="4"/>
+        </attr>
+        <attr name="vvFrameCornerColor" format="color"/>
+        <attr name="vvFrameCornerSize" format="dimension"/>
+        <attr name="vvFrameCornerStrokeWidth" format="dimension"/>
+        <attr name="vvFrameDrawable" format="reference"/>
+
+        <attr name="vvLaserLineHeight" format="dimension"/>
+        <attr name="vvLaserMovementSpeed" format="dimension"/>
+        <attr name="vvLaserAnimationInterval" format="integer"/>
+        <attr name="vvLaserGridColumn" format="integer"/>
+        <attr name="vvLaserGridHeight" format="dimension"/>
+        <attr name="vvLaserColor" format="color"/>
+        <attr name="vvLaserStyle" format="enum">
+            <enum name="none" value="0"/>
+            <enum name="line" value="1"/>
+            <enum name="grid" value="2"/>
+            <enum name="image" value="3"/>
+        </attr>
+        <attr name="vvLaserDrawable" format="reference"/>
+        <attr name="vvLaserDrawableRatio" format="float"/>
+
+        <attr name="vvLabelText" format="string"/>
+        <attr name="vvLabelTextColor" format="color"/>
+        <attr name="vvLabelTextSize" format="dimension"/>
+        <attr name="vvLabelTextPadding" format="dimension"/>
+        <attr name="vvLabelTextWidth" format="dimension"/>
+        <attr name="vvLabelTextLocation" format="enum">
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+        </attr>
+
+        <attr name="vvPointColor" format="color"/>
+        <attr name="vvPointStrokeColor" format="color"/>
+        <attr name="vvPointRadius" format="dimension"/>
+        <attr name="vvPointStrokeRatio" format="float"/>
+        <attr name="vvPointDrawable" format="reference"/>
+        <attr name="vvPointAnimation" format="boolean"/>
+        <attr name="vvPointAnimationInterval" format="integer"/>
+
+    </declare-styleable>
+
+</resources>
