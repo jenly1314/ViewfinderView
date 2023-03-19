@@ -3,7 +3,6 @@
 [![Download](https://img.shields.io/badge/download-App-blue.svg)](https://raw.githubusercontent.com/jenly1314/ViewfinderView/master/app/release/app-release.apk)
 [![MavenCentral](https://img.shields.io/maven-central/v/com.github.jenly1314/viewfinderview)](https://repo1.maven.org/maven2/com/github/jenly1314/viewfinderview)
 [![JitPack](https://jitpack.io/v/jenly1314/ViewfinderView.svg)](https://jitpack.io/#jenly1314/ViewfinderView)
-[![CI](https://travis-ci.org/jenly1314/ViewfinderView.svg?branch=master)](https://travis-ci.org/jenly1314/ViewfinderView)
 [![CircleCI](https://circleci.com/gh/jenly1314/ViewfinderView.svg?style=svg)](https://circleci.com/gh/jenly1314/ViewfinderView)
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License](https://img.shields.io/badge/license-Apche%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
