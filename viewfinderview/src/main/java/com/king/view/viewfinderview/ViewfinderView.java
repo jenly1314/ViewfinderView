@@ -292,8 +292,7 @@ public class ViewfinderView extends View {
          * 图片样式
          */
         IMAGE(3);
-        private int mValue;
-
+        private final int mValue;
         LaserStyle(int value) {
             mValue = value;
         }
@@ -314,12 +313,10 @@ public class ViewfinderView extends View {
     public enum TextLocation {
         TOP(0), BOTTOM(1);
 
-        private int mValue;
-
+        private final int mValue;
         TextLocation(int value) {
             mValue = value;
         }
-
         private static TextLocation getFromInt(int value) {
             for (TextLocation location : TextLocation.values()) {
                 if (location.mValue == value) {
@@ -336,8 +333,7 @@ public class ViewfinderView extends View {
     public enum FrameGravity {
         CENTER(0), LEFT(1), TOP(2), RIGHT(3), BOTTOM(4);
 
-        private int mValue;
-
+        private final int mValue;
         FrameGravity(int value) {
             mValue = value;
         }
@@ -513,6 +509,7 @@ public class ViewfinderView extends View {
             laserBitmapWidth = Math.min(width, height) * laserBitmapRatio;
             scaleLaserBitmap();
         }
+
         if (frameWidth <= 0 || frameWidth > width) {
             frameWidth = size;
         }

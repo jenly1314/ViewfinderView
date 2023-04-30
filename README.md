@@ -116,12 +116,12 @@ ViewfinderView 相关的自定义属性可参见上面的 **ViewfinderView属性
 * ViewfinderView初始版本
 
 ## 赞赏
-如果您喜欢ZXingLite，或感觉ZXingLite帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:<p>
+如果您喜欢ViewfinderView，或感觉ViewfinderView帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:<p>
 您也可以扫描下面的二维码，请作者喝杯咖啡 :coffee:
 <div>
 <img src="https://jenly1314.github.io/image/pay/sponsor.png" width="98%">
 </div>
-
+  
 ## 关于我
 Name: <a title="关于作者" href="https://jenly1314.github.io" target="_blank">Jenly</a>
 
