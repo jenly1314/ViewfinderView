@@ -69,24 +69,23 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 
 ### Gradle:
 
-1. 在Project的 **build.gradle** 里面添加远程仓库
 
-```gradle
-allprojects {
+1. 在Project的 **build.gradle** 或 **setting.gradle** 中添加远程仓库
+
+    ```gradle
     repositories {
         //...
         mavenCentral()
     }
-}
-```
+    ```
 
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 
-```gradle
-// AndroidX 版本
-implementation 'com.github.jenly1314:viewfinderview:1.0.0'
-
-```
+    ```gradle
+    // AndroidX 版本
+    implementation 'com.github.jenly1314:viewfinderview:1.1.0'
+    
+    ```
 
 ## 示例
 
@@ -112,6 +111,9 @@ ViewfinderView 相关的自定义属性可参见上面的 **ViewfinderView属性
 #### [CameraScan](https://github.com/jenly1314/CameraScan) 一个简化扫描识别流程的通用基础库。
 
 ## 版本记录
+
+#### v1.1.0：2023-9-8
+* 对外提供更多可配置的setter方法
 
 #### v1.0.0：2023-3-19
 * ViewfinderView初始版本

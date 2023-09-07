@@ -39,10 +39,7 @@ class ViewfinderViewActivity : AppCompatActivity() {
         setContentView(layoutId)
         val viewfinderView = findViewById<ViewfinderView>(R.id.viewfinderView)
 
-        val exampleType =
-            intent.getIntExtra(MainActivity.EXAMPLE_TYPE, ExampleType.VIEWFINDER_CLASSIC_STYLE)
-
-        when (exampleType) {
+        when (intent.getIntExtra(MainActivity.EXAMPLE_TYPE, ExampleType.VIEWFINDER_CLASSIC_STYLE)) {
             ExampleType.VIEWFINDER_CLASSIC_STYLE -> {
                 viewfinderView.setViewfinderStyle(ViewfinderStyle.CLASSIC)
             }
