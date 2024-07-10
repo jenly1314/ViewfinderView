@@ -90,14 +90,14 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 
 #### 布局示例
 
-ViewfinderView 相关的自定义属性可参见上面的 **ViewfinderView属性说明**
+ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属性说明**](###ViewfinderView属性说明)
 
 ```xml
-    <com.king.view.viewfinderview.ViewfinderView
-        android:id="@+id/viewfinderView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:vvLaserStyle="line" />
+ <com.king.view.viewfinderview.ViewfinderView
+     android:id="@+id/viewfinderView"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     app:vvLaserStyle="line" />
 ```
 
 更多使用详情，请查看[app](app)中的源码使用示例或直接查看 [API帮助文档](https://jitpack.io/com/github/jenly1314/ViewfinderView/latest/javadoc/)
