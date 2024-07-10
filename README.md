@@ -90,7 +90,7 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 
 #### 布局示例
 
-ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属性说明**](###ViewfinderView属性说明)
+ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属性说明**](#ViewfinderView属性说明)
 
 ```xml
  <com.king.view.viewfinderview.ViewfinderView
