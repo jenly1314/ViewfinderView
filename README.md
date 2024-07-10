@@ -35,8 +35,7 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 2. 在Module的 **build.gradle** 里面添加引入依赖项
 
     ```gradle
-    // AndroidX 版本
-    implementation 'com.github.jenly1314:viewfinderview:1.1.0'
+    implementation 'com.github.jenly1314:viewfinderview:1.2.0'
     
     ```
 
@@ -112,6 +111,11 @@ ViewfinderView 相关的自定义属性可参见上面的 **ViewfinderView属性
 
 ## 版本记录
 
+#### v1.2.0：2024-7-10
+* 对外提供更多可配置的setter方法
+* 更新Gradle至v8.0
+* 优化Lint检测
+
 #### v1.1.0：2023-9-8
 * 对外提供更多可配置的setter方法
 
@@ -119,9 +123,8 @@ ViewfinderView 相关的自定义属性可参见上面的 **ViewfinderView属性
 * ViewfinderView初始版本
 
 ## 赞赏
-如果您喜欢ViewfinderView，或感觉ViewfinderView帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:
-<p>您也可以扫描下面的二维码，请作者喝杯咖啡 :coffee:
-
+如果您喜欢ViewfinderView，或感觉ViewfinderView帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:<p>
+您也可以扫描下面的二维码，请作者喝杯咖啡 :coffee:
 <div>
    <img src="https://jenly1314.github.io/image/page/rewardcode.png">
 </div>

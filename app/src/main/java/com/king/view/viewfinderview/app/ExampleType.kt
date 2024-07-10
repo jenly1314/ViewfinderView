@@ -27,7 +27,7 @@ import androidx.annotation.IntDef
     ExampleType.SHOW_CUSTOM_RESULT_POINT,
 )
 @Target(AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
-@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.SOURCE)
 annotation class ExampleType {
     companion object {
         const val VIEWFINDER_CLASSIC_STYLE = 0

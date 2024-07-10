@@ -61,20 +61,21 @@ import androidx.annotation.Nullable;
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
  */
+@SuppressWarnings("unused")
 public class ViewfinderView extends View {
 
     /**
      * 默认范围比例，之所以默认为 1.2 是因为内切圆半径和外切圆半径之和的二分之一（即：（1 + √2) / 2 ≈ 1.2）
      */
-    private final float DEFAULT_RANGE_RATIO = 1.2F;
+    private static final float DEFAULT_RANGE_RATIO = 1.2F;
     /**
      * 最大缩放比例
      */
-    private final float MAX_ZOOM_RATIO = 1.2F;
+    private static final float MAX_ZOOM_RATIO = 1.2F;
     /**
      * 动画间隔
      */
-    private final int POINT_ANIMATION_INTERVAL = 3000;
+    private static final int POINT_ANIMATION_INTERVAL = 3000;
     /**
      * 画笔
      */
@@ -387,10 +388,8 @@ public class ViewfinderView extends View {
     /**
      * 初始化
      *
-     * @param context
-     * @param attrs
      */
-    private void init(Context context, AttributeSet attrs) {
+    private void init(@NonNull Context context, AttributeSet attrs) {
         // 初始化自定义属性信息
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ViewfinderView);
 
@@ -455,7 +454,7 @@ public class ViewfinderView extends View {
 
         if (pointDrawable != null) {
             pointBitmap = getBitmapFormDrawable(pointDrawable);
-            pointRangeRadius = (pointBitmap.getWidth() + pointBitmap.getHeight()) / 4 * DEFAULT_RANGE_RATIO;
+            pointRangeRadius = (pointBitmap.getWidth() + pointBitmap.getHeight()) / 4f * DEFAULT_RANGE_RATIO;
         } else {
             pointStrokeRadius = pointRadius * pointStrokeRatio;
             pointRangeRadius = pointStrokeRadius * DEFAULT_RANGE_RATIO;
@@ -467,11 +466,11 @@ public class ViewfinderView extends View {
 
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                if (isShowPoints && checkSingleTap(e.getX(), e.getY())) {
+            public boolean onSingleTapUp(@NonNull MotionEvent event) {
+                if (isShowPoints && checkSingleTap(event.getX(), event.getY())) {
                     return true;
                 }
-                return super.onSingleTapUp(e);
+                return super.onSingleTapUp(event);
             }
         });
 
@@ -479,13 +478,10 @@ public class ViewfinderView extends View {
 
     /**
      * 获取颜色
-     *
-     * @param context
-     * @param id
-     * @return
      */
+    @SuppressWarnings("deprecation")
     private int getColor(@NonNull Context context, @ColorRes int id) {
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return context.getColor(id);
         } else {
             return context.getResources().getColor(id);
@@ -495,8 +491,6 @@ public class ViewfinderView extends View {
     /**
      * 根据 drawable 获取对应的 bitmap
      *
-     * @param drawable
-     * @return
      */
     private Bitmap getBitmapFormDrawable(@NonNull Drawable drawable) {
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
@@ -529,8 +523,6 @@ public class ViewfinderView extends View {
     /**
      * 初始化扫描框
      *
-     * @param width
-     * @param height
      */
     private void initFrame(int width, int height) {
 
@@ -554,8 +546,8 @@ public class ViewfinderView extends View {
             labelTextWidth = width - getPaddingLeft() - getPaddingRight();
         }
 
-        float leftOffsets = (width - frameWidth) / 2 + framePaddingLeft - framePaddingRight;
-        float topOffsets = (height - frameHeight) / 2 + framePaddingTop - framePaddingBottom;
+        float leftOffsets = (width - frameWidth) / 2f + framePaddingLeft - framePaddingRight;
+        float topOffsets = (height - frameHeight) / 2f + framePaddingTop - framePaddingBottom;
         switch (frameGravity) {
             case LEFT:
                 leftOffsets = framePaddingLeft;
@@ -622,8 +614,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制文本
      *
-     * @param canvas
-     * @param frame
      */
     private void drawTextInfo(Canvas canvas, Rect frame) {
         if (!TextUtils.isEmpty(labelText)) {
@@ -633,9 +623,9 @@ public class ViewfinderView extends View {
 
             StaticLayout staticLayout = new StaticLayout(labelText, textPaint, labelTextWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f, true);
             if (labelTextLocation == TextLocation.BOTTOM) {
-                canvas.translate(frame.left + frame.width() / 2, frame.bottom + labelTextPadding);
+                canvas.translate(frame.left + frame.width() / 2f, frame.bottom + labelTextPadding);
             } else {
-                canvas.translate(frame.left + frame.width() / 2, frame.top - labelTextPadding - staticLayout.getHeight());
+                canvas.translate(frame.left + frame.width() / 2f, frame.top - labelTextPadding - staticLayout.getHeight());
             }
             staticLayout.draw(canvas);
         }
@@ -645,8 +635,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制边角
      *
-     * @param canvas
-     * @param frame
      */
     private void drawCorner(Canvas canvas, Rect frame) {
         paint.setColor(frameCornerColor);
@@ -667,12 +655,10 @@ public class ViewfinderView extends View {
     /**
      * 绘制扫描动画
      *
-     * @param canvas
-     * @param frame
      */
     private void drawImageScanner(Canvas canvas, Rect frame) {
         if (laserBitmap != null) {
-            canvas.drawBitmap(laserBitmap, (getWidth() - laserBitmap.getWidth()) / 2, scannerStart, paint);
+            canvas.drawBitmap(laserBitmap, (getWidth() - laserBitmap.getWidth()) / 2f, scannerStart, paint);
             if (scannerStart < scannerEnd) {
                 scannerStart += laserMovementSpeed;
             } else {
@@ -686,8 +672,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制激光扫描线
      *
-     * @param canvas
-     * @param frame
      */
     private void drawLaserScanner(Canvas canvas, Rect frame) {
         if (laserStyle != null) {
@@ -710,8 +694,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制线性式扫描
      *
-     * @param canvas
-     * @param frame
      */
     private void drawLineScanner(Canvas canvas, Rect frame) {
         // 线性渐变
@@ -736,8 +718,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制网格式扫描
      *
-     * @param canvas
-     * @param frame
      */
     private void drawGridScanner(Canvas canvas, Rect frame) {
         int stroke = 2;
@@ -749,17 +729,16 @@ public class ViewfinderView extends View {
         // 给画笔设置着色器
         paint.setShader(linearGradient);
 
-        float wUnit = frame.width() * 1.0f / laserGridColumn;
-        float hUnit = wUnit;
+        float gridItemSize = frame.width() * 1.0f / laserGridColumn;
         // 遍历绘制网格纵线
         for (int i = 1; i < laserGridColumn; i++) {
-            canvas.drawLine(frame.left + i * wUnit, startY, frame.left + i * wUnit, scannerStart, paint);
+            canvas.drawLine(frame.left + i * gridItemSize, startY, frame.left + i * gridItemSize, scannerStart, paint);
         }
         int height = laserGridHeight > 0 && scannerStart - frame.top > laserGridHeight ? laserGridHeight : scannerStart - frame.top;
 
         // 遍历绘制网格横线
-        for (int i = 0; i <= height / hUnit; i++) {
-            canvas.drawLine(frame.left + frameLineStrokeWidth, scannerStart - i * hUnit, frame.right - frameLineStrokeWidth, scannerStart - i * hUnit, paint);
+        for (int i = 0; i <= height / gridItemSize; i++) {
+            canvas.drawLine(frame.left + frameLineStrokeWidth, scannerStart - i * gridItemSize, frame.right - frameLineStrokeWidth, scannerStart - i * gridItemSize, paint);
         }
 
         if (scannerStart < scannerEnd) {
@@ -773,10 +752,8 @@ public class ViewfinderView extends View {
     /**
      * 处理颜色模糊
      *
-     * @param color
-     * @return
      */
-    private int shadeColor(int color) {
+    private int shadeColor(@ColorInt int color) {
         String hax = Integer.toHexString(color);
         String result = "01" + hax.substring(2);
         return Integer.valueOf(result, 16);
@@ -785,8 +762,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制扫描区边框
      *
-     * @param canvas
-     * @param frame
      */
     private void drawFrame(Canvas canvas, Rect frame) {
         paint.setColor(frameColor);
@@ -806,10 +781,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制模糊区域
      *
-     * @param canvas
-     * @param frame
-     * @param width
-     * @param height
      */
     private void drawExterior(Canvas canvas, Rect frame, int width, int height) {
         if (maskColor != 0) {
@@ -824,9 +795,6 @@ public class ViewfinderView extends View {
     /**
      * 绘制遮罩层
      *
-     * @param canvas
-     * @param width
-     * @param height
      */
     private void drawMask(Canvas canvas, int width, int height) {
         if (maskColor != 0) {
@@ -838,8 +806,6 @@ public class ViewfinderView extends View {
     /**
      * 根据结果点集合绘制结果点
      *
-     * @param canvas
-     * @param points
      */
     private void drawResultPoints(Canvas canvas, List<Point> points) {
         paint.setColor(Color.WHITE);
@@ -878,15 +844,13 @@ public class ViewfinderView extends View {
         }
 
         // 每间隔3秒触发一套缩放动画，一套动画缩放三个回合(即：每次zoomCount累加到2后重置为0时)
-        postInvalidateDelayed(zoomCount == 0 && lastZoomRatio == 1f ? pointAnimationInterval : laserAnimationInterval * 2);
+        postInvalidateDelayed(zoomCount == 0 && lastZoomRatio == 1f ? pointAnimationInterval : laserAnimationInterval * 2L);
 
     }
 
     /**
      * 绘制结果点
      *
-     * @param canvas
-     * @param point
      */
     private void drawResultPoint(Canvas canvas, Point point, float currentZoomRatio) {
         if (pointBitmap != null) {
@@ -915,9 +879,7 @@ public class ViewfinderView extends View {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isShowPoints) {
-            gestureDetector.onTouchEvent(event);
-        }
+        gestureDetector.onTouchEvent(event);
         return isShowPoints || super.onTouchEvent(event);
     }
 
@@ -935,17 +897,12 @@ public class ViewfinderView extends View {
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
      * 获取两点之间的距离
      *
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @return
      */
     private float getDistance(float x1, float y1, float x2, float y2) {
         return (float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -954,7 +911,7 @@ public class ViewfinderView extends View {
     /**
      * 是否显示结果点
      *
-     * @return
+     * @return 是否显示结果点
      */
     public boolean isShowPoints() {
         return isShowPoints;
@@ -971,7 +928,7 @@ public class ViewfinderView extends View {
     /**
      * 显示结果点
      *
-     * @param points
+     * @param points 结果点
      */
     public void showResultPoints(List<Point> points) {
         pointList = points;
@@ -985,52 +942,62 @@ public class ViewfinderView extends View {
     /**
      * 设置 扫描区外遮罩的颜色
      *
-     * @param maskColor
+     * @param maskColor 遮罩颜色
      */
-    public void setMaskColor(int maskColor) {
+    public void setMaskColor(@ColorInt int maskColor) {
         this.maskColor = maskColor;
     }
 
     /**
      * 设置 扫描区边框的颜色
      *
-     * @param frameColor
+     * @param frameColor 扫描区边框的颜色
      */
-    public void setFrameColor(int frameColor) {
+    public void setFrameColor(@ColorInt int frameColor) {
         this.frameColor = frameColor;
     }
 
     /**
      * 设置扫描区激光线的颜色
      *
-     * @param laserColor
+     * @param laserColor 激光线的颜色
      */
-    public void setLaserColor(int laserColor) {
+    public void setLaserColor(@ColorInt int laserColor) {
         this.laserColor = laserColor;
     }
 
     /**
      * 设置扫描区边角的颜色
      *
-     * @param frameCornerColor
+     * @param frameCornerColor 扫描区边角的颜色
      */
-    public void setFrameCornerColor(int frameCornerColor) {
+    public void setFrameCornerColor(@ColorInt int frameCornerColor) {
         this.frameCornerColor = frameCornerColor;
     }
 
     /**
      * 设置提示文本距离扫描区的间距
      *
-     * @param labelTextPadding
+     * @param labelTextPadding 提示文本距离扫描区的间距
      */
     public void setLabelTextPadding(float labelTextPadding) {
         this.labelTextPadding = labelTextPadding;
     }
 
     /**
+     * 设置提示文本距离扫描区的间距
+     *
+     * @param labelTextPadding 提示文本距离扫描区的间距
+     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     */
+    public void setLabelTextPadding(float labelTextPadding, int unit) {
+        this.labelTextPadding = TypedValue.applyDimension(unit, labelTextPadding, getResources().getDisplayMetrics());
+    }
+
+    /**
      * 设置提示文本的宽度，默认为View的宽度
      *
-     * @param labelTextWidth
+     * @param labelTextWidth 提示文本的宽度
      */
     public void setLabelTextWidth(int labelTextWidth) {
         this.labelTextWidth = labelTextWidth;
@@ -1039,7 +1006,7 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本显示位置
      *
-     * @param labelTextLocation
+     * @param labelTextLocation 提示文本显示位置
      */
     public void setLabelTextLocation(TextLocation labelTextLocation) {
         this.labelTextLocation = labelTextLocation;
@@ -1048,7 +1015,7 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本信息
      *
-     * @param labelText
+     * @param labelText 提示文本信息
      */
     public void setLabelText(String labelText) {
         this.labelText = labelText;
@@ -1057,7 +1024,7 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本字体颜色
      *
-     * @param color
+     * @param color 提示文本字体颜色
      */
     public void setLabelTextColor(@ColorInt int color) {
         this.labelTextColor = color;
@@ -1066,7 +1033,7 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本字体颜色
      *
-     * @param id
+     * @param id 提示文本字体颜色资源ID
      */
     public void setLabelTextColorResource(@ColorRes int id) {
         this.labelTextColor = getColor(getContext(), id);
@@ -1075,16 +1042,26 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本字体大小
      *
-     * @param textSize
+     * @param textSize 提示文本字体大小
      */
     public void setLabelTextSize(float textSize) {
         this.labelTextSize = textSize;
     }
 
     /**
+     * 设置提示文本字体大小
+     *
+     * @param textSize 提示文本字体大小
+     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_SP}；如需了解更多可查看：{@link TypedValue}
+     */
+    public void setLabelTextSize(float textSize, int unit) {
+        this.labelTextSize = TypedValue.applyDimension(unit, textSize, getResources().getDisplayMetrics());
+    }
+
+    /**
      * 设置激光样式
      *
-     * @param laserStyle
+     * @param laserStyle 激光样式
      */
     public void setLaserStyle(LaserStyle laserStyle) {
         this.laserStyle = laserStyle;
@@ -1093,7 +1070,7 @@ public class ViewfinderView extends View {
     /**
      * 设置网格激光扫描列数
      *
-     * @param laserGridColumn
+     * @param laserGridColumn 网格激光扫描列数
      */
     public void setLaserGridColumn(int laserGridColumn) {
         this.laserGridColumn = laserGridColumn;
@@ -1102,7 +1079,7 @@ public class ViewfinderView extends View {
     /**
      * 设置网格激光扫描高度，为0时，表示动态铺满
      *
-     * @param laserGridHeight
+     * @param laserGridHeight 网格激光扫描高度
      */
     public void setLaserGridHeight(int laserGridHeight) {
         this.laserGridHeight = laserGridHeight;
@@ -1111,7 +1088,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描区边角的宽
      *
-     * @param frameCornerStrokeWidth
+     * @param frameCornerStrokeWidth 扫描区边角的宽
      */
     public void setFrameCornerStrokeWidth(int frameCornerStrokeWidth) {
         this.frameCornerStrokeWidth = frameCornerStrokeWidth;
@@ -1120,16 +1097,27 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描区边角的高
      *
-     * @param frameCornerSize
+     * @param frameCornerSize 扫描区边角的高
      */
     public void setFrameCornerSize(int frameCornerSize) {
         this.frameCornerSize = frameCornerSize;
     }
 
     /**
+     * 设置扫描区边角的高
+     *
+     * @param frameCornerSize 扫描区边角的高
+     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     */
+    public void setFrameCornerSize(int frameCornerSize, int unit) {
+        this.frameCornerSize = (int) TypedValue.applyDimension(unit, frameCornerSize, getResources().getDisplayMetrics());
+    }
+
+
+    /**
      * 设置激光扫描的速度：即：每次移动的距离
      *
-     * @param laserMovementSpeed
+     * @param laserMovementSpeed 激光扫描的速度
      */
     public void setLaserMovementSpeed(int laserMovementSpeed) {
         this.laserMovementSpeed = laserMovementSpeed;
@@ -1138,7 +1126,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描线高度
      *
-     * @param laserLineHeight
+     * @param laserLineHeight 扫描线高度
      */
     public void setLaserLineHeight(int laserLineHeight) {
         this.laserLineHeight = laserLineHeight;
@@ -1147,7 +1135,7 @@ public class ViewfinderView extends View {
     /**
      * 设置边框线宽度
      *
-     * @param frameLineStrokeWidth
+     * @param frameLineStrokeWidth 边框线宽度
      */
     public void setFrameLineStrokeWidth(int frameLineStrokeWidth) {
         this.frameLineStrokeWidth = frameLineStrokeWidth;
@@ -1156,7 +1144,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框图片
      *
-     * @param drawableResId
+     * @param drawableResId 扫描框图片资源ID
      */
     public void setFrameDrawable(@DrawableRes int drawableResId) {
         setFrameBitmap(BitmapFactory.decodeResource(getResources(), drawableResId));
@@ -1165,7 +1153,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框图片
      *
-     * @param frameBitmap
+     * @param frameBitmap 扫描框图片
      */
     public void setFrameBitmap(Bitmap frameBitmap) {
         this.frameBitmap = frameBitmap;
@@ -1174,7 +1162,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描动画延迟间隔时间，单位：毫秒
      *
-     * @param laserAnimationInterval
+     * @param laserAnimationInterval 扫描动画延迟间隔时间
      */
     public void setLaserAnimationInterval(int laserAnimationInterval) {
         this.laserAnimationInterval = laserAnimationInterval;
@@ -1183,34 +1171,44 @@ public class ViewfinderView extends View {
     /**
      * 设置结果点的颜色
      *
-     * @param pointColor
+     * @param pointColor 结果点的颜色
      */
-    public void setPointColor(int pointColor) {
+    public void setPointColor(@ColorInt int pointColor) {
         this.pointColor = pointColor;
     }
 
     /**
      * 设置结果点描边的颜色
      *
-     * @param pointStrokeColor
+     * @param pointStrokeColor 结果点描边的颜色
      */
-    public void setPointStrokeColor(int pointStrokeColor) {
+    public void setPointStrokeColor(@ColorInt int pointStrokeColor) {
         this.pointStrokeColor = pointStrokeColor;
     }
 
     /**
      * 设置结果点的半径
      *
-     * @param pointRadius
+     * @param pointRadius 结果点的半径
      */
     public void setPointRadius(float pointRadius) {
         this.pointRadius = pointRadius;
     }
 
     /**
+     * 设置结果点的半径
+     *
+     * @param pointRadius 结果点的半径
+     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     */
+    public void setPointRadius(float pointRadius, int unit) {
+        this.pointRadius = TypedValue.applyDimension(unit, pointRadius, getResources().getDisplayMetrics());
+    }
+
+    /**
      * 设置激光扫描自定义图片
      *
-     * @param drawableResId
+     * @param drawableResId 激光扫描自定义图片资源ID
      */
     public void setLaserDrawable(@DrawableRes int drawableResId) {
         setLaserBitmap(BitmapFactory.decodeResource(getResources(), drawableResId));
@@ -1219,7 +1217,7 @@ public class ViewfinderView extends View {
     /**
      * 设置激光扫描自定义图片
      *
-     * @param laserBitmap
+     * @param laserBitmap 激光扫描自定义图片
      */
     public void setLaserBitmap(Bitmap laserBitmap) {
         this.laserBitmap = laserBitmap;
@@ -1229,7 +1227,7 @@ public class ViewfinderView extends View {
     /**
      * 设置结果点图片
      *
-     * @param drawableResId
+     * @param drawableResId 结果点图片资源ID
      */
     public void setPointDrawable(@DrawableRes int drawableResId) {
         setPointBitmap(BitmapFactory.decodeResource(getResources(), drawableResId));
@@ -1238,17 +1236,17 @@ public class ViewfinderView extends View {
     /**
      * 设置结果点图片
      *
-     * @param bitmap
+     * @param bitmap 结果点图片
      */
     public void setPointBitmap(Bitmap bitmap) {
         pointBitmap = bitmap;
-        pointRangeRadius = (pointBitmap.getWidth() + pointBitmap.getHeight()) / 4 * DEFAULT_RANGE_RATIO;
+        pointRangeRadius = (pointBitmap.getWidth() + pointBitmap.getHeight()) / 4f * DEFAULT_RANGE_RATIO;
     }
 
     /**
-     * 设置点的动画间隔时长；单位：毫秒
+     * 设置结果点的动画间隔时长；单位：毫秒
      *
-     * @param pointAnimationInterval
+     * @param pointAnimationInterval 结果点的动画间隔时长
      */
     public void setPointAnimationInterval(int pointAnimationInterval) {
         this.pointAnimationInterval = pointAnimationInterval;
@@ -1257,7 +1255,7 @@ public class ViewfinderView extends View {
     /**
      * 设置取景框样式；支持：classic：经典样式（带扫描框那种）、popular：流行样式（不带扫描框）
      *
-     * @param viewfinderStyle
+     * @param viewfinderStyle 取景框样式
      */
     public void setViewfinderStyle(int viewfinderStyle) {
         this.viewfinderStyle = viewfinderStyle;
@@ -1266,7 +1264,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的宽度
      *
-     * @param frameWidth
+     * @param frameWidth 扫描框的宽度
      */
     public void setFrameWidth(int frameWidth) {
         this.frameWidth = frameWidth;
@@ -1275,7 +1273,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的高度
      *
-     * @param frameHeight
+     * @param frameHeight 扫描框的高度
      */
     public void setFrameHeight(int frameHeight) {
         this.frameHeight = frameHeight;
@@ -1284,7 +1282,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的与视图宽的占比；默认：0.625
      *
-     * @param frameRatio
+     * @param frameRatio 扫描框的与视图宽的占比
      */
     public void setFrameRatio(float frameRatio) {
         this.frameRatio = frameRatio;
@@ -1293,7 +1291,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框左边的间距
      *
-     * @param framePaddingLeft
+     * @param framePaddingLeft 扫描框左边的间距
      */
     public void setFramePaddingLeft(float framePaddingLeft) {
         this.framePaddingLeft = framePaddingLeft;
@@ -1302,7 +1300,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框顶部的间距
      *
-     * @param framePaddingTop
+     * @param framePaddingTop 扫描框顶部的间距
      */
     public void setFramePaddingTop(float framePaddingTop) {
         this.framePaddingTop = framePaddingTop;
@@ -1311,7 +1309,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框右边的间距
      *
-     * @param framePaddingRight
+     * @param framePaddingRight 扫描框右边的间距
      */
     public void setFramePaddingRight(float framePaddingRight) {
         this.framePaddingRight = framePaddingRight;
@@ -1320,10 +1318,10 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的间距
      *
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
+     * @param left 扫描框左边的间距
+     * @param top 扫描框顶部的间距
+     * @param right 扫描框左边的间距
+     * @param bottom 扫描框底部的间距
      */
     public void setFramePadding(float left, float top, float right, float bottom) {
         this.framePaddingLeft = left;
@@ -1335,7 +1333,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框底部的间距
      *
-     * @param framePaddingBottom
+     * @param framePaddingBottom 扫描框底部的间距
      */
     public void setFramePaddingBottom(float framePaddingBottom) {
         this.framePaddingBottom = framePaddingBottom;
@@ -1344,7 +1342,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的对齐方式；默认居中对齐；即：{@link FrameGravity#CENTER}
      *
-     * @param frameGravity
+     * @param frameGravity 扫描框的对齐方式
      */
     public void setFrameGravity(FrameGravity frameGravity) {
         this.frameGravity = frameGravity;
@@ -1353,7 +1351,7 @@ public class ViewfinderView extends View {
     /**
      * 设置是否显示结果点缩放动画；默认为：true
      *
-     * @param pointAnimation
+     * @param pointAnimation 是否显示结果点缩放动画
      */
     public void setPointAnimation(boolean pointAnimation) {
         isPointAnimation = pointAnimation;
@@ -1362,7 +1360,7 @@ public class ViewfinderView extends View {
     /**
      * 设置结果点外圈描边的半径；默认为：{@link #pointRadius} 的 {@link #pointStrokeRatio} 倍
      *
-     * @param pointStrokeRadius
+     * @param pointStrokeRadius 结果点外圈描边的半径
      */
     public void setPointStrokeRadius(float pointStrokeRadius) {
         this.pointStrokeRadius = pointStrokeRadius;
@@ -1371,7 +1369,7 @@ public class ViewfinderView extends View {
     /**
      * 设置显示结果点动画的缩放速度；默认为：0.02 / {@link  #laserAnimationInterval}
      *
-     * @param zoomSpeed
+     * @param zoomSpeed 显示结果点动画的缩放速度
      */
     public void setZoomSpeed(float zoomSpeed) {
         this.zoomSpeed = zoomSpeed;
@@ -1382,7 +1380,7 @@ public class ViewfinderView extends View {
      * 需要注意的是，因为有效点击范围是建立在结果点的基础之上才有意义的；其主要目的是为了支持一定的容错范围；所以如果在此方法之后；
      * 有直接或间接有调用{@link #setPointBitmap(Bitmap)}方法的话，那么 {@link #pointRangeRadius}的值将会被覆盖。
      *
-     * @param pointRangeRadius
+     * @param pointRangeRadius 结果点有效点击范围半径
      */
     public void setPointRangeRadius(float pointRangeRadius) {
         this.pointRangeRadius = pointRangeRadius;
@@ -1391,7 +1389,7 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描线位图的宽度比例；默认为：0.625；此方法会改变{@link #laserBitmapWidth}
      *
-     * @param laserBitmapRatio
+     * @param laserBitmapRatio 扫描线位图的宽度比例
      */
     public void setLaserBitmapRatio(float laserBitmapRatio) {
         this.laserBitmapRatio = laserBitmapRatio;
@@ -1401,10 +1399,11 @@ public class ViewfinderView extends View {
         }
     }
 
+
     /**
      * 设置扫描线位图的宽度
      *
-     * @param laserBitmapWidth
+     * @param laserBitmapWidth 扫描线位图的宽度
      */
     public void setLaserBitmapWidth(float laserBitmapWidth) {
         this.laserBitmapWidth = laserBitmapWidth;
@@ -1414,7 +1413,7 @@ public class ViewfinderView extends View {
     /**
      * 设置点击Item监听
      *
-     * @param listener
+     * @param listener 点击Item监听器
      */
     public void setOnItemClickListener(OnItemClickListener listener) {
         onItemClickListener = listener;
@@ -1427,7 +1426,7 @@ public class ViewfinderView extends View {
         /**
          * Item点击事件
          *
-         * @param position
+         * @param position 点击Item的索引位置
          */
         void onItemClick(int position);
     }

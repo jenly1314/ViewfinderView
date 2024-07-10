@@ -25,13 +25,12 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-//    runtimeOnly "androidx.annotation:annotation:$versions.annotation"
     implementation "androidx.annotation:annotation:$versions.annotation"
 
     testImplementation "junit:junit:$versions.junit"
