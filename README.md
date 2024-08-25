@@ -36,7 +36,7 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 
     ```gradle
     implementation 'com.github.jenly1314:viewfinderview:1.2.0'
-    
+
     ```
 
 ## 使用
@@ -90,7 +90,7 @@ ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画�
 
 #### 布局示例
 
-ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属性说明**](#ViewfinderView属性说明)
+ViewfinderView 相关的自定义属性可查看上面的 [ViewfinderView属性说明](#ViewfinderView属性说明)
 
 ```xml
  <com.king.view.viewfinderview.ViewfinderView
@@ -100,7 +100,7 @@ ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属�
      app:vvLaserStyle="line" />
 ```
 
-更多使用详情，请查看[app](app)中的源码使用示例或直接查看 [API帮助文档](https://jitpack.io/com/github/jenly1314/ViewfinderView/latest/javadoc/)
+更多使用详情，请查看[app](app)中的源码使用示例或直接查看 [API帮助文档](https://jenly1314.github.io/ViewfinderView/api/)
 
 ## 相关推荐
 
@@ -109,18 +109,16 @@ ViewfinderView 相关的自定义属性可查看上面的 [**ViewfinderView属�
 #### [WeChatQRCode](https://github.com/jenly1314/WeChatQRCode) 基于OpenCV开源的微信二维码引擎移植的扫码识别库。
 #### [CameraScan](https://github.com/jenly1314/CameraScan) 一个简化扫描识别流程的通用基础库。
 
-## 版本记录
+<!-- end -->
+
+## 版本日志
 
 #### v1.2.0：2024-7-10
 * 对外提供更多可配置的setter方法
 * 更新Gradle至v8.0
 * 优化Lint检测
 
-#### v1.1.0：2023-9-8
-* 对外提供更多可配置的setter方法
-
-#### v1.0.0：2023-3-19
-* ViewfinderView初始版本
+#### [查看更多日志](CHANGELOG.md)
 
 ## 赞赏
 如果您喜欢ViewfinderView，或感觉ViewfinderView帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:<p>
