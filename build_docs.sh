@@ -6,7 +6,7 @@ set -ex
 ./gradlew dokkaHtml
 
 mkdir -p docs/api
-mv logx/build/dokka/html/* docs/api
+mv viewfinderview/build/dokka/html/* docs/api
 
 # Copy in special files that GitHub wants in the project root.
 GITHUB_URL=https://github.com/jenly1314/ViewfinderView/
