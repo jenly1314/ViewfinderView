@@ -123,7 +123,7 @@ ViewfinderView 相关的自定义属性可查看上面的 [ViewfinderView属性�
 * 新增属性：`vvFullRefresh`（是否完全刷新）
 * 优化一些细节
 
-#### [查看更多日志](CHANGELOG.md)
+#### [查看更多版本日志](CHANGELOG.md)
 
 ## 赞赏
 如果您喜欢ViewfinderView，或感觉ViewfinderView帮助到了您，可以点右上角“Star”支持一下，您的支持就是我的动力，谢谢 :smiley:<p>
