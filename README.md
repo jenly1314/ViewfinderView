@@ -13,7 +13,7 @@
 
 > 目前[ZXingLite](https://github.com/jenly1314/ZXingLite)、[MLKit](https://github.com/jenly1314/MLKit)、[WeChatQRCode](https://github.com/jenly1314/WeChatQRCode) 都已使用了此 **ViewfinderView** 作为通用的扫描渲染视图。
 
-## Gif 效果展示
+## 效果展示
 ![Image](GIF.gif)
 
 > 你也可以直接下载 [演示App](https://raw.githubusercontent.com/jenly1314/ViewfinderView/master/app/release/app-release.apk) 体验效果
@@ -32,7 +32,7 @@
     }
     ```
 
-2. 在Module的 **build.gradle** 里面添加依赖项
+2. 在Module的 **build.gradle** 中添加依赖项
 
     ```gradle
     implementation 'com.github.jenly1314:viewfinderview:1.3.0'
