@@ -7,11 +7,11 @@
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License](https://img.shields.io/badge/license-Apche%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-ViewfinderView 是一个取景视图：主要用于渲染扫描相关的动画效果。其样式主要分为两大类：classic：经典样式（带扫描框）、popular：流行样式（不带扫描框）；可任意定制。
+**ViewfinderView** 是一个取景视图：主要用于渲染扫描相关的动画效果。其样式主要分为两大类：`classic`：经典样式（带扫描框）、`popular`：流行样式（不带扫描框）；可任意定制。
 
 > 如果你之前有使用过 [ZXingLite](https://github.com/jenly1314/ZXingLite) 或 [MLKit](https://github.com/jenly1314/MLKit)，可能会用到其内部的 **ViewfinderView**。现已将 **ViewfinderView** 独立出来，便于后续统一维护。
 
-> 以后[ZXingLite](https://github.com/jenly1314/ZXingLite)、[MLKit](https://github.com/jenly1314/MLKit)、[WeChatQRCode](https://github.com/jenly1314/WeChatQRCode) 发布的新版本都将直接使用此 **ViewfinderView** 作为通用的扫描渲染视图。
+> 目前[ZXingLite](https://github.com/jenly1314/ZXingLite)、[MLKit](https://github.com/jenly1314/MLKit)、[WeChatQRCode](https://github.com/jenly1314/WeChatQRCode) 都已使用了此 **ViewfinderView** 作为通用的扫描渲染视图。
 
 ## Gif 效果展示
 ![Image](GIF.gif)
