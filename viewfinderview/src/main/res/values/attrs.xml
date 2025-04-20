@@ -24,6 +24,7 @@
         <attr name="vvFrameCornerColor" format="color"/>
         <attr name="vvFrameCornerSize" format="dimension"/>
         <attr name="vvFrameCornerStrokeWidth" format="dimension"/>
+        <attr name="vvFrameCornerRadius" format="dimension"/>
         <attr name="vvFrameDrawable" format="reference"/>
 
         <attr name="vvLaserLineHeight" format="dimension"/>
@@ -31,6 +32,7 @@
         <attr name="vvLaserAnimationInterval" format="integer"/>
         <attr name="vvLaserGridColumn" format="integer"/>
         <attr name="vvLaserGridHeight" format="dimension"/>
+        <attr name="vvLaserGridStrokeWidth" format="dimension"/>
         <attr name="vvLaserColor" format="color"/>
         <attr name="vvLaserStyle" format="enum">
             <enum name="none" value="0"/>
@@ -58,7 +60,7 @@
         <attr name="vvPointDrawable" format="reference"/>
         <attr name="vvPointAnimation" format="boolean"/>
         <attr name="vvPointAnimationInterval" format="integer"/>
-
+        <attr name="vvFullRefresh" format="boolean"/>
     </declare-styleable>
 
 </resources>

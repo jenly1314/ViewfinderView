@@ -16,12 +16,13 @@
 package com.king.view.viewfinderview.app
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
-import com.king.view.viewfinderview.ViewfinderView.ViewfinderStyle
+import androidx.appcompat.app.AppCompatActivity
+
 /**
+ * 示例
  * @author <a href="mailto:jenly1314@gmail.com">Jenly</a>
  * <p>
  * <a href="https://github.com/jenly1314">Follow me</a>
@@ -52,33 +53,42 @@ class MainActivity : AppCompatActivity() {
                     ExampleType.VIEWFINDER_CLASSIC_STYLE
                 )
             }
+
             R.id.btnGridLaserStyle1 -> {
                 startPreview(
                     R.layout.activity_grid_style_viewfinder,
                     ExampleType.VIEWFINDER_CLASSIC_STYLE
                 )
             }
+
             R.id.btnGridLaserStyle2 -> {
                 startPreview(
                     R.layout.activity_full_grid_style_viewfinder,
                     ExampleType.VIEWFINDER_CLASSIC_STYLE
                 )
             }
+
             R.id.btnImageLaserStyle -> {
                 startPreview(
                     R.layout.activity_image_style_viewfinder,
                     ExampleType.VIEWFINDER_CLASSIC_STYLE
                 )
             }
+
             R.id.btnPopularViewfinderStyle -> {
                 startPreview(
                     R.layout.activity_image_style_viewfinder,
                     ExampleType.VIEWFINDER_POPULAR_STYLE
                 )
             }
+
             R.id.btnShowPoints -> {
-                startPreview(R.layout.activity_line_style_viewfinder, ExampleType.SHOW_RESULT_POINT)
+                startPreview(
+                    R.layout.activity_line_style_viewfinder,
+                    ExampleType.SHOW_RESULT_POINT
+                )
             }
+
             R.id.btnCustomShowPoints -> {
                 startPreview(
                     R.layout.activity_line_style_viewfinder,

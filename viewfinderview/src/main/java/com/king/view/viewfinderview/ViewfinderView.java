@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -43,16 +44,16 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.List;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * 取景视图：主要用于渲染扫描相关的动画效果
@@ -90,7 +91,7 @@ public class ViewfinderView extends View {
      */
     private int maskColor;
     /**
-     * 扫描区域边框颜色
+     * 扫描框域边框颜色
      */
     private int frameColor;
     /**
@@ -130,11 +131,11 @@ public class ViewfinderView extends View {
     /**
      * 扫描线开始位置
      */
-    private int scannerStart = 0;
+    private float scannerStart;
     /**
      * 扫描线结束位置
      */
-    private int scannerEnd = 0;
+    private float scannerEnd;
 
     /**
      * 扫描框宽
@@ -144,6 +145,10 @@ public class ViewfinderView extends View {
      * 扫描框高
      */
     private int frameHeight;
+    /**
+     * 扫描框圆角半径
+     */
+    private float frameCornerRadius;
     /**
      * 激光扫描风格
      */
@@ -156,39 +161,47 @@ public class ViewfinderView extends View {
     /**
      * 网格高度
      */
-    private int laserGridHeight;
+    private float laserGridHeight;
+    /**
+     * 扫描网格线条的宽
+     */
+    private float laserGridStrokeWidth;
 
     /**
      * 扫描框
      */
-    private Rect frame;
+    private RectF frame;
 
     /**
-     * 扫描区边角的宽
+     * 扫描框边角的宽
      */
-    private int frameCornerStrokeWidth;
+    private float frameCornerStrokeWidth;
     /**
-     * 扫描区边角的高
+     * 扫描框边角的高
      */
-    private int frameCornerSize;
+    private float frameCornerSize;
     /**
      * 扫描线每次移动距离
      */
-    private int laserMovementSpeed;
+    private float laserMovementSpeed;
     /**
      * 扫描线高度
      */
-    private int laserLineHeight;
+    private float laserLineHeight;
 
     /**
      * 扫描动画延迟间隔时间 默认20毫秒
      */
     private int laserAnimationInterval;
+    /**
+     * 是否完全刷新
+     */
+    private boolean fullRefresh;
 
     /**
      * 边框线宽度
      */
-    private int frameLineStrokeWidth;
+    private float frameLineStrokeWidth;
 
     /**
      * 扫描框占比
@@ -206,7 +219,9 @@ public class ViewfinderView extends View {
      * 扫描框对齐方式
      */
     private FrameGravity frameGravity;
-
+    /**
+     * 扫描框图片
+     */
     private Bitmap frameBitmap;
 
     /**
@@ -217,7 +232,13 @@ public class ViewfinderView extends View {
      * 结果点描边颜色
      */
     private int pointStrokeColor;
+    /**
+     * 结果点图片
+     */
     private Bitmap pointBitmap;
+    /**
+     * 是否显示结果点缩放动画
+     */
     private boolean isPointAnimation = true;
 
     /**
@@ -387,39 +408,38 @@ public class ViewfinderView extends View {
 
     /**
      * 初始化
-     *
      */
     private void init(@NonNull Context context, AttributeSet attrs) {
         // 初始化自定义属性信息
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ViewfinderView);
-
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 
         viewfinderStyle = array.getInt(R.styleable.ViewfinderView_vvViewfinderStyle, ViewfinderStyle.CLASSIC);
-
         maskColor = array.getColor(R.styleable.ViewfinderView_vvMaskColor, getColor(context, R.color.viewfinder_mask));
 
         frameColor = array.getColor(R.styleable.ViewfinderView_vvFrameColor, getColor(context, R.color.viewfinder_frame));
         frameWidth = array.getDimensionPixelSize(R.styleable.ViewfinderView_vvFrameWidth, 0);
         frameHeight = array.getDimensionPixelSize(R.styleable.ViewfinderView_vvFrameHeight, 0);
         frameRatio = array.getFloat(R.styleable.ViewfinderView_vvFrameRatio, 0.625f);
-        frameLineStrokeWidth = (int) array.getDimension(R.styleable.ViewfinderView_vvFrameLineStrokeWidth, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, displayMetrics));
+        frameLineStrokeWidth = array.getDimension(R.styleable.ViewfinderView_vvFrameLineStrokeWidth, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, displayMetrics));
         framePaddingLeft = array.getDimension(R.styleable.ViewfinderView_vvFramePaddingLeft, 0);
         framePaddingTop = array.getDimension(R.styleable.ViewfinderView_vvFramePaddingTop, 0);
         framePaddingRight = array.getDimension(R.styleable.ViewfinderView_vvFramePaddingRight, 0);
         framePaddingBottom = array.getDimension(R.styleable.ViewfinderView_vvFramePaddingBottom, 0);
         frameGravity = FrameGravity.getFromInt(array.getInt(R.styleable.ViewfinderView_vvFrameGravity, FrameGravity.CENTER.mValue));
         frameCornerColor = array.getColor(R.styleable.ViewfinderView_vvFrameCornerColor, getColor(context, R.color.viewfinder_corner));
-        frameCornerSize = (int) array.getDimension(R.styleable.ViewfinderView_vvFrameCornerSize, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics));
-        frameCornerStrokeWidth = (int) array.getDimension(R.styleable.ViewfinderView_vvFrameCornerStrokeWidth, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, displayMetrics));
+        frameCornerSize = array.getDimension(R.styleable.ViewfinderView_vvFrameCornerSize, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics));
+        frameCornerStrokeWidth = array.getDimension(R.styleable.ViewfinderView_vvFrameCornerStrokeWidth, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, displayMetrics));
+        frameCornerRadius = array.getDimension(R.styleable.ViewfinderView_vvFrameCornerRadius, 0);
         Drawable frameDrawable = array.getDrawable(R.styleable.ViewfinderView_vvFrameDrawable);
 
-        laserLineHeight = (int) array.getDimension(R.styleable.ViewfinderView_vvLaserLineHeight, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, displayMetrics));
-        laserMovementSpeed = (int) array.getDimension(R.styleable.ViewfinderView_vvLaserMovementSpeed, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics));
+        laserLineHeight = array.getDimension(R.styleable.ViewfinderView_vvLaserLineHeight, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, displayMetrics));
+        laserMovementSpeed = array.getDimension(R.styleable.ViewfinderView_vvLaserMovementSpeed, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics));
         laserAnimationInterval = array.getInteger(R.styleable.ViewfinderView_vvLaserAnimationInterval, 20);
 
         laserGridColumn = array.getInt(R.styleable.ViewfinderView_vvLaserGridColumn, 20);
-        laserGridHeight = (int) array.getDimension(R.styleable.ViewfinderView_vvLaserGridHeight, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics));
+        laserGridHeight = array.getDimension(R.styleable.ViewfinderView_vvLaserGridHeight, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, displayMetrics));
+        laserGridStrokeWidth = array.getDimension(R.styleable.ViewfinderView_vvLaserGridStrokeWidth, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, displayMetrics));
 
         laserColor = array.getColor(R.styleable.ViewfinderView_vvLaserColor, getColor(context, R.color.viewfinder_laser));
         laserStyle = LaserStyle.getFromInt(array.getInt(R.styleable.ViewfinderView_vvLaserStyle, LaserStyle.LINE.mValue));
@@ -431,7 +451,7 @@ public class ViewfinderView extends View {
         labelTextSize = array.getDimension(R.styleable.ViewfinderView_vvLabelTextSize, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14f, displayMetrics));
         labelTextPadding = array.getDimension(R.styleable.ViewfinderView_vvLabelTextPadding, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, displayMetrics));
         labelTextWidth = array.getDimensionPixelSize(R.styleable.ViewfinderView_vvLabelTextWidth, 0);
-        labelTextLocation = TextLocation.getFromInt(array.getInt(R.styleable.ViewfinderView_vvLabelTextLocation, 0));
+        labelTextLocation = TextLocation.getFromInt(array.getInt(R.styleable.ViewfinderView_vvLabelTextLocation, 1));
 
         pointColor = array.getColor(R.styleable.ViewfinderView_vvPointColor, getColor(context, R.color.viewfinder_point));
         pointStrokeColor = array.getColor(R.styleable.ViewfinderView_vvPointStrokeColor, getColor(context, R.color.viewfinder_point_stroke));
@@ -441,6 +461,7 @@ public class ViewfinderView extends View {
 
         isPointAnimation = array.getBoolean(R.styleable.ViewfinderView_vvPointAnimation, true);
         pointAnimationInterval = array.getInt(R.styleable.ViewfinderView_vvPointAnimationInterval, POINT_ANIMATION_INTERVAL);
+        fullRefresh = array.getBoolean(R.styleable.ViewfinderView_vvFullRefresh, false);
 
         array.recycle();
 
@@ -463,6 +484,7 @@ public class ViewfinderView extends View {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setAntiAlias(true);
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setAntiAlias(true);
 
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -490,7 +512,6 @@ public class ViewfinderView extends View {
 
     /**
      * 根据 drawable 获取对应的 bitmap
-     *
      */
     private Bitmap getBitmapFormDrawable(@NonNull Drawable drawable) {
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
@@ -522,10 +543,8 @@ public class ViewfinderView extends View {
 
     /**
      * 初始化扫描框
-     *
      */
     private void initFrame(int width, int height) {
-
         minDimension = Math.min(width, height);
         int size = (int) (minDimension * frameRatio);
 
@@ -563,7 +582,7 @@ public class ViewfinderView extends View {
                 break;
         }
 
-        frame = new Rect((int) leftOffsets, (int) topOffsets, (int) leftOffsets + frameWidth, (int) topOffsets + frameHeight);
+        frame = new RectF(leftOffsets, topOffsets, leftOffsets + frameWidth, topOffsets + frameHeight);
     }
 
     @Override
@@ -583,7 +602,7 @@ public class ViewfinderView extends View {
             return;
         }
 
-        if (scannerStart == 0 || scannerEnd == 0) {
+        if (scannerStart == 0f || scannerEnd == 0f) {
             scannerStart = frame.top;
             scannerEnd = frame.bottom - laserLineHeight;
         }
@@ -598,14 +617,21 @@ public class ViewfinderView extends View {
             drawFrame(canvas, frame);
             // 绘制提示信息
             drawTextInfo(canvas, frame);
-            // 间隔更新取景区域
-            postInvalidateDelayed(laserAnimationInterval, frame.left, frame.top, frame.right, frame.bottom);
+
+            if (fullRefresh) {
+                // 完全刷新
+                postInvalidateDelayed(laserAnimationInterval);
+            } else {
+                // 局部刷新，更高效
+                postInvalidateDelayed(laserAnimationInterval, (int) frame.left, (int) frame.top, (int) frame.right, (int) frame.bottom);
+            }
         } else if (viewfinderStyle == ViewfinderStyle.POPULAR) {
             // POPULAR样式：类似于新版的微信全屏扫描（不带扫描框）
             // 绘制扫描动画
             drawLaserScanner(canvas, frame);
             // 绘制提示信息
             drawTextInfo(canvas, frame);
+
             postInvalidateDelayed(laserAnimationInterval);
         }
 
@@ -613,57 +639,93 @@ public class ViewfinderView extends View {
 
     /**
      * 绘制文本
-     *
      */
-    private void drawTextInfo(Canvas canvas, Rect frame) {
+    private void drawTextInfo(Canvas canvas, RectF frame) {
         if (!TextUtils.isEmpty(labelText)) {
             textPaint.setColor(labelTextColor);
             textPaint.setTextSize(labelTextSize);
             textPaint.setTextAlign(Paint.Align.CENTER);
 
             StaticLayout staticLayout = new StaticLayout(labelText, textPaint, labelTextWidth, Layout.Alignment.ALIGN_NORMAL, 1.2f, 0.0f, true);
-            if (labelTextLocation == TextLocation.BOTTOM) {
-                canvas.translate(frame.left + frame.width() / 2f, frame.bottom + labelTextPadding);
-            } else {
-                canvas.translate(frame.left + frame.width() / 2f, frame.top - labelTextPadding - staticLayout.getHeight());
-            }
-            staticLayout.draw(canvas);
-        }
 
+            int saveCount = canvas.save();
+            try {
+                if (labelTextLocation == TextLocation.BOTTOM) {
+                    canvas.translate(frame.centerX(), frame.bottom + labelTextPadding);
+                } else {
+                    canvas.translate(frame.centerX(), frame.top - labelTextPadding - staticLayout.getHeight());
+                }
+                staticLayout.draw(canvas);
+            } finally {
+                canvas.restoreToCount(saveCount);
+            }
+        }
     }
 
     /**
-     * 绘制边角
-     *
+     * 绘制扫描框边角
      */
-    private void drawCorner(Canvas canvas, Rect frame) {
+    private void drawFrameCorner(Canvas canvas, RectF frame) {
         paint.setColor(frameCornerColor);
-        // 左上
-        canvas.drawRect(frame.left, frame.top, frame.left + frameCornerStrokeWidth, frame.top + frameCornerSize, paint);
-        canvas.drawRect(frame.left, frame.top, frame.left + frameCornerSize, frame.top + frameCornerStrokeWidth, paint);
-        // 右上
-        canvas.drawRect(frame.right - frameCornerStrokeWidth, frame.top, frame.right, frame.top + frameCornerSize, paint);
-        canvas.drawRect(frame.right - frameCornerSize, frame.top, frame.right, frame.top + frameCornerStrokeWidth, paint);
-        // 左下
-        canvas.drawRect(frame.left, frame.bottom - frameCornerStrokeWidth, frame.left + frameCornerSize, frame.bottom, paint);
-        canvas.drawRect(frame.left, frame.bottom - frameCornerSize, frame.left + frameCornerStrokeWidth, frame.bottom, paint);
-        // 右下
-        canvas.drawRect(frame.right - frameCornerStrokeWidth, frame.bottom - frameCornerSize, frame.right, frame.bottom, paint);
-        canvas.drawRect(frame.right - frameCornerSize, frame.bottom - frameCornerStrokeWidth, frame.right, frame.bottom, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(frameCornerStrokeWidth);
+
+        float padding = (frameCornerStrokeWidth - frameLineStrokeWidth) / 2;
+        RectF cornerFrame = new RectF(frame.left + padding, frame.top + padding,
+            frame.right - padding, frame.bottom - padding);
+
+        // 绘制圆角
+        if (frameCornerRadius > 0f) {
+            float diameter = 2 * frameCornerRadius;
+            // 左上角（从180度开始，画90度）
+            RectF topLeft = new RectF(cornerFrame.left, cornerFrame.top,
+                cornerFrame.left + diameter, cornerFrame.top + diameter);
+            canvas.drawArc(topLeft, 180, 90, false, paint);
+
+            // 右上角（从270度开始，画90度）
+            RectF topRight = new RectF(cornerFrame.right - diameter, cornerFrame.top,
+                cornerFrame.right, cornerFrame.top + diameter);
+            canvas.drawArc(topRight, 270, 90, false, paint);
+
+            // 右下角（从0度开始，画90度）
+            RectF bottomRight = new RectF(cornerFrame.right - diameter, cornerFrame.bottom - diameter,
+                cornerFrame.right, cornerFrame.bottom);
+            canvas.drawArc(bottomRight, 0, 90, false, paint);
+
+            // 左下角（从90度开始，画90度）
+            RectF bottomLeft = new RectF(cornerFrame.left, cornerFrame.bottom - diameter,
+                cornerFrame.left + diameter, cornerFrame.bottom);
+            canvas.drawArc(bottomLeft, 90, 90, false, paint);
+        }
+
+        float length = frameCornerSize - frameCornerRadius;
+        // 绘制边角纵横延长线
+        if (length > 0f) {
+            // 左上
+            canvas.drawLine(cornerFrame.left - padding + frameCornerRadius, cornerFrame.top, cornerFrame.left + frameCornerSize, cornerFrame.top, paint);
+            canvas.drawLine(cornerFrame.left, cornerFrame.top - padding + frameCornerRadius, cornerFrame.left, cornerFrame.top + frameCornerSize, paint);
+
+            // 右上
+            canvas.drawLine(cornerFrame.right - frameCornerSize, cornerFrame.top, cornerFrame.right + padding - frameCornerRadius, cornerFrame.top, paint);
+            canvas.drawLine(cornerFrame.right, cornerFrame.top - padding + frameCornerRadius, cornerFrame.right, cornerFrame.top + frameCornerSize, paint);
+
+            // 右下
+            canvas.drawLine(cornerFrame.right + padding - frameCornerRadius, cornerFrame.bottom, cornerFrame.right - frameCornerSize, cornerFrame.bottom, paint);
+            canvas.drawLine(cornerFrame.right, cornerFrame.bottom + padding - frameCornerRadius, cornerFrame.right, cornerFrame.bottom - frameCornerSize, paint);
+
+            // 左下
+            canvas.drawLine(cornerFrame.left + frameCornerSize, cornerFrame.bottom, cornerFrame.left - padding + frameCornerRadius, cornerFrame.bottom, paint);
+            canvas.drawLine(cornerFrame.left, cornerFrame.bottom + padding - frameCornerRadius, cornerFrame.left, cornerFrame.bottom - frameCornerSize, paint);
+        }
     }
+
 
     /**
      * 绘制扫描动画
-     *
      */
-    private void drawImageScanner(Canvas canvas, Rect frame) {
+    private void drawImageScanner(Canvas canvas, RectF frame) {
         if (laserBitmap != null) {
             canvas.drawBitmap(laserBitmap, (getWidth() - laserBitmap.getWidth()) / 2f, scannerStart, paint);
-            if (scannerStart < scannerEnd) {
-                scannerStart += laserMovementSpeed;
-            } else {
-                scannerStart = frame.top;
-            }
         } else {
             drawLineScanner(canvas, frame);
         }
@@ -671,133 +733,148 @@ public class ViewfinderView extends View {
 
     /**
      * 绘制激光扫描线
-     *
      */
-    private void drawLaserScanner(Canvas canvas, Rect frame) {
-        if (laserStyle != null) {
-            paint.setColor(laserColor);
-            switch (laserStyle) {
-                case LINE:// 线
-                    drawLineScanner(canvas, frame);
-                    break;
-                case GRID:// 网格
-                    drawGridScanner(canvas, frame);
-                    break;
-                case IMAGE:// 图片
-                    drawImageScanner(canvas, frame);
-                    break;
-            }
-            paint.setShader(null);
+    private void drawLaserScanner(Canvas canvas, RectF frame) {
+        if (laserStyle == null) {
+            return;
         }
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(laserColor);
+        switch (laserStyle) {
+            case LINE:// 线
+                drawLineScanner(canvas, frame);
+                break;
+            case GRID:// 网格
+                drawGridScanner(canvas, frame);
+                break;
+            case IMAGE:// 图片
+                drawImageScanner(canvas, frame);
+                break;
+        }
+        // 更新扫描位置
+        if (scannerStart < scannerEnd) {
+            scannerStart += laserMovementSpeed;
+        } else {
+            scannerStart = frame.top;
+        }
+        // 清除shader
+        paint.setShader(null);
     }
 
     /**
      * 绘制线性式扫描
-     *
      */
-    private void drawLineScanner(Canvas canvas, Rect frame) {
+    private void drawLineScanner(Canvas canvas, RectF frame) {
         // 线性渐变
         LinearGradient linearGradient = new LinearGradient(
-                frame.centerX(), scannerStart,
-                frame.centerX(), scannerStart + laserLineHeight,
-                shadeColor(laserColor),
-                laserColor,
-                Shader.TileMode.MIRROR);
+            frame.centerX(), scannerStart,
+            frame.centerX(), scannerStart + laserLineHeight,
+            new int[]{shadeColor(laserColor), laserColor},
+            null,
+            Shader.TileMode.CLAMP);
 
         paint.setShader(linearGradient);
-        if (scannerStart < scannerEnd) {
-            // 椭圆
-            RectF rectF = new RectF(frame.left + frameCornerSize, scannerStart, frame.right - frameCornerSize, scannerStart + laserLineHeight);
-            canvas.drawOval(rectF, paint);
-            scannerStart += laserMovementSpeed;
-        } else {
-            scannerStart = frame.top;
-        }
+        // 椭圆
+        RectF rectF = new RectF(frame.left + frameCornerSize, scannerStart, frame.right - frameCornerSize, scannerStart + laserLineHeight);
+        canvas.drawOval(rectF, paint);
     }
 
     /**
      * 绘制网格式扫描
-     *
      */
-    private void drawGridScanner(Canvas canvas, Rect frame) {
-        int stroke = 2;
-        paint.setStrokeWidth(stroke);
-        // 计算Y轴开始位置
-        int startY = laserGridHeight > 0 && scannerStart - frame.top > laserGridHeight ? scannerStart - laserGridHeight : frame.top;
+    private void drawGridScanner(Canvas canvas, RectF frame) {
+        paint.setStrokeWidth(laserGridStrokeWidth);
+        paint.setStyle(Paint.Style.STROKE);
 
-        LinearGradient linearGradient = new LinearGradient(frame.centerX(), startY, frame.centerX(), scannerStart, new int[]{shadeColor(laserColor), laserColor}, new float[]{0, 1f}, LinearGradient.TileMode.CLAMP);
-        // 给画笔设置着色器
+        // 计算Y轴开始位置
+        float startY = (laserGridHeight > 0 && scannerStart - frame.top > laserGridHeight)
+            ? scannerStart - laserGridHeight : frame.top;
+
+        // 渐变设置
+        LinearGradient linearGradient = new LinearGradient(
+            frame.centerX(), startY,
+            frame.centerX(), scannerStart,
+            new int[]{shadeColor(laserColor), laserColor},
+            null,
+            Shader.TileMode.CLAMP
+        );
         paint.setShader(linearGradient);
 
-        float gridItemSize = frame.width() * 1.0f / laserGridColumn;
-        // 遍历绘制网格纵线
+        float gridItemSize = frame.width() / laserGridColumn;
+        Path gridPath = new Path();
+
+        // 绘制纵向线
         for (int i = 1; i < laserGridColumn; i++) {
-            canvas.drawLine(frame.left + i * gridItemSize, startY, frame.left + i * gridItemSize, scannerStart, paint);
-        }
-        int height = laserGridHeight > 0 && scannerStart - frame.top > laserGridHeight ? laserGridHeight : scannerStart - frame.top;
-
-        // 遍历绘制网格横线
-        for (int i = 0; i <= height / gridItemSize; i++) {
-            canvas.drawLine(frame.left + frameLineStrokeWidth, scannerStart - i * gridItemSize, frame.right - frameLineStrokeWidth, scannerStart - i * gridItemSize, paint);
+            float x = frame.left + i * gridItemSize;
+            gridPath.moveTo(x, startY);
+            gridPath.lineTo(x, scannerStart);
         }
 
-        if (scannerStart < scannerEnd) {
-            scannerStart += laserMovementSpeed;
-        } else {
-            scannerStart = frame.top;
+        // 绘制横向线
+        float visibleHeight = scannerStart - startY;
+        int horizontalLineCount = (int) Math.ceil(visibleHeight / gridItemSize);
+        float padding = frameLineStrokeWidth / 2f;
+        for (int i = 0; i <= horizontalLineCount; i++) {
+            float y = scannerStart - i * gridItemSize;
+            gridPath.moveTo(frame.left + padding, y);
+            gridPath.lineTo(frame.right - padding, y);
         }
 
+        canvas.drawPath(gridPath, paint);
     }
 
     /**
      * 处理颜色模糊
-     *
      */
-    private int shadeColor(@ColorInt int color) {
-        String hax = Integer.toHexString(color);
-        String result = "01" + hax.substring(2);
-        return Integer.valueOf(result, 16);
+    private static int shadeColor(@ColorInt int color) {
+        return (color & 0x00FFFFFF) | 0x01000000;
     }
 
     /**
-     * 绘制扫描区边框
-     *
+     * 绘制扫描框边框
      */
-    private void drawFrame(Canvas canvas, Rect frame) {
+    private void drawFrame(Canvas canvas, RectF frame) {
         paint.setColor(frameColor);
+        paint.setStyle(Paint.Style.STROKE);
         if (frameBitmap != null) {
             canvas.drawBitmap(frameBitmap, null, frame, paint);
         } else {
-            canvas.drawRect(frame.left, frame.top, frame.right, frame.top + frameLineStrokeWidth, paint);
-            canvas.drawRect(frame.left, frame.top, frame.left + frameLineStrokeWidth, frame.bottom, paint);
-            canvas.drawRect(frame.right - frameLineStrokeWidth, frame.top, frame.right, frame.bottom, paint);
-            canvas.drawRect(frame.left, frame.bottom - frameLineStrokeWidth, frame.right, frame.bottom, paint);
-            // 绘制取景区域边角
-            drawCorner(canvas, frame);
+            paint.setStrokeWidth(frameLineStrokeWidth);
+            // 绘制圆角边框
+            canvas.drawRoundRect(frame, frameCornerRadius, frameCornerRadius, paint);
+            // 绘制扫描框边角
+            drawFrameCorner(canvas, frame);
         }
-
     }
 
     /**
      * 绘制模糊区域
-     *
      */
-    private void drawExterior(Canvas canvas, Rect frame, int width, int height) {
-        if (maskColor != 0) {
-            paint.setColor(maskColor);
-            canvas.drawRect(0, 0, width, frame.top, paint);
-            canvas.drawRect(0, frame.top, frame.left, frame.bottom, paint);
-            canvas.drawRect(frame.right, frame.top, width, frame.bottom, paint);
-            canvas.drawRect(0, frame.bottom, width, height, paint);
+    private void drawExterior(Canvas canvas, RectF frame, int width, int height) {
+        if (maskColor == 0) {
+            return;
         }
+        paint.setColor(maskColor);
+        paint.setStyle(Paint.Style.FILL);
+
+        Path path = new Path();
+        path.addRect(0, 0, width, height, Path.Direction.CW);
+
+        Path framePath = new Path();
+        framePath.addRoundRect(frame, frameCornerRadius, frameCornerRadius, Path.Direction.CW);
+
+        // 使用 DIFFERENCE 模式挖空扫描取景区域
+        path.op(framePath, Path.Op.DIFFERENCE);
+        // 绘制最终路径
+        canvas.drawPath(path, paint);
     }
 
     /**
      * 绘制遮罩层
-     *
      */
     private void drawMask(Canvas canvas, int width, int height) {
         if (maskColor != 0) {
+            paint.setStyle(Paint.Style.FILL);
             paint.setColor(maskColor);
             canvas.drawRect(0, 0, width, height, paint);
         }
@@ -805,10 +882,10 @@ public class ViewfinderView extends View {
 
     /**
      * 根据结果点集合绘制结果点
-     *
      */
     private void drawResultPoints(Canvas canvas, List<Point> points) {
         paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL);
         if (points != null) {
             for (Point point : points) {
                 drawResultPoint(canvas, point, currentZoomRatio);
@@ -850,7 +927,6 @@ public class ViewfinderView extends View {
 
     /**
      * 绘制结果点
-     *
      */
     private void drawResultPoint(Canvas canvas, Point point, float currentZoomRatio) {
         if (pointBitmap != null) {
@@ -902,7 +978,6 @@ public class ViewfinderView extends View {
 
     /**
      * 获取两点之间的距离
-     *
      */
     private float getDistance(float x1, float y1, float x2, float y2) {
         return (float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -949,9 +1024,9 @@ public class ViewfinderView extends View {
     }
 
     /**
-     * 设置 扫描区边框的颜色
+     * 设置 扫描框边框的颜色
      *
-     * @param frameColor 扫描区边框的颜色
+     * @param frameColor 扫描框边框的颜色
      */
     public void setFrameColor(@ColorInt int frameColor) {
         this.frameColor = frameColor;
@@ -967,9 +1042,9 @@ public class ViewfinderView extends View {
     }
 
     /**
-     * 设置扫描区边角的颜色
+     * 设置扫描框边角的颜色
      *
-     * @param frameCornerColor 扫描区边角的颜色
+     * @param frameCornerColor 扫描框边角的颜色
      */
     public void setFrameCornerColor(@ColorInt int frameCornerColor) {
         this.frameCornerColor = frameCornerColor;
@@ -978,17 +1053,17 @@ public class ViewfinderView extends View {
     /**
      * 设置提示文本距离扫描区的间距
      *
-     * @param labelTextPadding 提示文本距离扫描区的间距
+     * @param labelTextPadding 提示文本距离扫描框的间距
      */
     public void setLabelTextPadding(float labelTextPadding) {
         this.labelTextPadding = labelTextPadding;
     }
 
     /**
-     * 设置提示文本距离扫描区的间距
+     * 设置提示文本距离扫描框的间距
      *
-     * @param labelTextPadding 提示文本距离扫描区的间距
-     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     * @param labelTextPadding 提示文本距离扫描框的间距
+     * @param unit             单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
      */
     public void setLabelTextPadding(float labelTextPadding, int unit) {
         this.labelTextPadding = TypedValue.applyDimension(unit, labelTextPadding, getResources().getDisplayMetrics());
@@ -1052,7 +1127,7 @@ public class ViewfinderView extends View {
      * 设置提示文本字体大小
      *
      * @param textSize 提示文本字体大小
-     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_SP}；如需了解更多可查看：{@link TypedValue}
+     * @param unit     单位；比如：{@link TypedValue#COMPLEX_UNIT_SP}；如需了解更多可查看：{@link TypedValue}
      */
     public void setLabelTextSize(float textSize, int unit) {
         this.labelTextSize = TypedValue.applyDimension(unit, textSize, getResources().getDisplayMetrics());
@@ -1086,31 +1161,50 @@ public class ViewfinderView extends View {
     }
 
     /**
-     * 设置扫描区边角的宽
+     * 设置扫描框边角的宽
      *
-     * @param frameCornerStrokeWidth 扫描区边角的宽
+     * @param frameCornerStrokeWidth 扫描框边角的宽
      */
     public void setFrameCornerStrokeWidth(int frameCornerStrokeWidth) {
         this.frameCornerStrokeWidth = frameCornerStrokeWidth;
     }
 
     /**
-     * 设置扫描区边角的高
+     * 设置扫描框边角的高
      *
-     * @param frameCornerSize 扫描区边角的高
+     * @param frameCornerSize 扫描框边角的高
      */
     public void setFrameCornerSize(int frameCornerSize) {
         this.frameCornerSize = frameCornerSize;
     }
 
     /**
-     * 设置扫描区边角的高
+     * 设置扫描框边角的高
      *
-     * @param frameCornerSize 扫描区边角的高
-     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     * @param frameCornerSize 扫描框边角的高
+     * @param unit            单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
      */
     public void setFrameCornerSize(int frameCornerSize, int unit) {
-        this.frameCornerSize = (int) TypedValue.applyDimension(unit, frameCornerSize, getResources().getDisplayMetrics());
+        this.frameCornerSize = TypedValue.applyDimension(unit, frameCornerSize, getResources().getDisplayMetrics());
+    }
+
+    /**
+     * 设置扫描框圆角半径
+     *
+     * @param frameCornerRadius 扫描框圆角半径
+     */
+    public void setFrameCornerRadius(int frameCornerRadius) {
+        this.frameCornerRadius = frameCornerRadius;
+    }
+
+    /**
+     * 设置扫描框圆角半径
+     *
+     * @param frameCornerRadius 扫描框圆角半径
+     * @param unit              单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     */
+    public void setFrameCornerRadius(int frameCornerRadius, int unit) {
+        this.frameCornerRadius = TypedValue.applyDimension(unit, frameCornerRadius, getResources().getDisplayMetrics());
     }
 
 
@@ -1199,7 +1293,7 @@ public class ViewfinderView extends View {
      * 设置结果点的半径
      *
      * @param pointRadius 结果点的半径
-     * @param unit 单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
+     * @param unit        单位；比如：{@link TypedValue#COMPLEX_UNIT_DIP}；如需了解更多可查看：{@link TypedValue}
      */
     public void setPointRadius(float pointRadius, int unit) {
         this.pointRadius = TypedValue.applyDimension(unit, pointRadius, getResources().getDisplayMetrics());
@@ -1318,9 +1412,9 @@ public class ViewfinderView extends View {
     /**
      * 设置扫描框的间距
      *
-     * @param left 扫描框左边的间距
-     * @param top 扫描框顶部的间距
-     * @param right 扫描框左边的间距
+     * @param left   扫描框左边的间距
+     * @param top    扫描框顶部的间距
+     * @param right  扫描框左边的间距
      * @param bottom 扫描框底部的间距
      */
     public void setFramePadding(float left, float top, float right, float bottom) {
@@ -1399,7 +1493,6 @@ public class ViewfinderView extends View {
         }
     }
 
-
     /**
      * 设置扫描线位图的宽度
      *
@@ -1408,6 +1501,18 @@ public class ViewfinderView extends View {
     public void setLaserBitmapWidth(float laserBitmapWidth) {
         this.laserBitmapWidth = laserBitmapWidth;
         scaleLaserBitmap();
+    }
+
+    /**
+     * 设置是否完全刷新；适用于当 {@link #viewfinderStyle} 为 {@link ViewfinderStyle#CLASSIC} 时；
+     * {@link #fullRefresh}的默认值为：{@code false}；
+     * 当设置为{@code false}时，则使用局部刷新；即：视图只刷新扫描区域；
+     * 当设置为{@code true}时，则使用完全刷新，即：视图会刷新全部区域。
+     *
+     * @param fullRefresh 是否完全刷新
+     */
+    public void setFullRefresh(boolean fullRefresh) {
+        this.fullRefresh = fullRefresh;
     }
 
     /**
