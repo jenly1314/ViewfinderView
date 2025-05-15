@@ -5,7 +5,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/jenly1314/ViewfinderView/build.yml?logo=github)](https://github.com/jenly1314/ViewfinderView/actions/workflows/build.yml)
 [![Download](https://img.shields.io/badge/download-APK-brightgreen?logo=github)](https://raw.githubusercontent.com/jenly1314/ViewfinderView/master/app/release/app-release.apk)
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen?logo=android)](https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels)
-[![License](https://img.shields.io/github/license/jenly1314/ViewfinderView?logo=open-source-initiative)](https://opensource.org/licenses/LICENSE-2-0)
+[![License](https://img.shields.io/github/license/jenly1314/ViewfinderView?logo=open-source-initiative)](https://opensource.org/licenses/apache-2-0)
 
 
 **ViewfinderView** 是一个取景视图：主要用于渲染扫描相关的动画效果。其样式主要分为两大类：`classic`：经典样式（带扫描框）、`popular`：流行样式（不带扫描框）；可任意定制。
