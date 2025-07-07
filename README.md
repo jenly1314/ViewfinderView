@@ -36,7 +36,7 @@
 2. 在Module的 **build.gradle** 中添加依赖项
 
     ```gradle
-    implementation 'com.github.jenly1314:viewfinderview:1.3.0'
+    implementation 'com.github.jenly1314:viewfinderview:1.4.0'
 
     ```
 
@@ -118,10 +118,9 @@ ViewfinderView 相关的自定义属性可查看上面的 [ViewfinderView属性�
 
 ## 版本日志
 
-#### v1.3.0：2025-4-20
-* 新增属性：`vvFrameCornerRadius`（扫描框圆角半径）
-* 新增属性：`vvLaserGridStrokeWidth`（网格线条的宽）
-* 新增属性：`vvFullRefresh`（是否完全刷新）
+#### v1.4.0：2025-7-7
+* 迁移发布至 **Central Portal** [相关公告](https://central.sonatype.org/pages/ossrh-eol/#logging-in-to-central-portal)
+* 更新Gradle至v8.5
 * 优化一些细节
 
 #### [查看更多版本日志](CHANGELOG.md)

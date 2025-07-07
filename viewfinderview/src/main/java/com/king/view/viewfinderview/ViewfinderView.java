@@ -602,10 +602,11 @@ public class ViewfinderView extends View {
             return;
         }
 
-        if (scannerStart == 0f || scannerEnd == 0f) {
+        if (scannerStart == 0f) {
             scannerStart = frame.top;
-            scannerEnd = frame.bottom - laserLineHeight;
         }
+
+        scannerEnd = frame.bottom - laserLineHeight;
 
         // CLASSIC样式：经典样式（带扫描框）
         if (viewfinderStyle == ViewfinderStyle.CLASSIC) {
