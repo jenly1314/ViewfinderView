@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "ViewfinderView"
-include ':app'
-include ':viewfinderview'
+include(":app")
+include(":viewfinderview")
